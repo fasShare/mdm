@@ -1,14 +1,14 @@
 #include "mcacheTaskServer.h"
-#include <EventLoop.h>
 #include <boost/bind.hpp>
 #include <Log.h>
 
-mcacheTaskServer::mcacheTaskServer(fas::EventLoop* loop,
+mcacheTaskServer::mcacheTaskServer(hashSPtr hash, fas::EventLoop* loop,
                                    const fas::NetAddress& addr,
                                    int threadNum) :
   loop_(loop),
   tcpSer_(loop_, addr, threadNum),
-  reqHandles_() {
+  reqHandles_(),
+  hash_(hash) {
   tcpSer_.setOnConnectionCallBack(boost::bind(&mcacheTaskServer::OnNewConnection, this, _1));
   tcpSer_.setOnConnRemovedCallBack(boost::bind(&mcacheTaskServer::OnConnectionRemoved, this, _1));
 }
@@ -17,8 +17,8 @@ void mcacheTaskServer::OnNewConnection(fas::TcpConnShreadPtr conn) {
   LOGGER_TRACE << fas::Log::CLRF;
   // req must not be shared_ptr, or conn will be referenced by itself.
   // you can analyse it by youself seriously.
-  std::shared_ptr<mcacheTaskHandle> reqHandle = std::make_shared<mcacheTaskHandle>();
-
+  std::shared_ptr<mcacheTaskHandle> reqHandle = std::make_shared<mcacheTaskHandle>(hash_);
+  LOGGER_TRACE << fas::Log::CLRF;
   conn->setOnMessageCallBack(boost::bind(&mcacheTaskHandle::OnMessageCallback, reqHandle, _1, _2, _3));
   this->reqHandles_[fas::connkey_t(conn->getConnfd(), conn.get())] = reqHandle;
 }
