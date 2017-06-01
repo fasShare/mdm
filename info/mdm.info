@@ -1,0 +1,15 @@
+{
+"mdmInfo" : 
+		{
+			"PollInCmdHandleTimeOut" : "500",
+			"mdmServerIp" : "127.0.0.1",
+			"mdmServerPort" : "9999",
+			"mdmServerThreadNum" : "4",
+			"HashVirtualNode" : "5"
+		},
+"HashAddrMgrInfo" :
+		{
+			"master" : "127.0.0.1,8899",
+			"slave"  : "127.0.0.1,8898"
+		}
+}

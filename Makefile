@@ -1,4 +1,4 @@
-libs := -lfas -lpthread
+libs := -lfas -lpthread -ljsoncpp
 cflags := -std=c++11 -static -Wall
 CC = g++
 

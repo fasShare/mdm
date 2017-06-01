@@ -11,6 +11,7 @@ LIBS += -lfasutils
 LIBS += -lpthread
 LIBS += -lmemcachedutil
 LIBS += -lmemcached
+LIBS += -ljsoncpp
 
 INCLUDEPATH += "fas/base"
 QMAKE_LIBDIR += "/home/fas/workspace/cc/C++/QtWorkplace/mdm/lib"
@@ -29,7 +30,8 @@ SOURCES += mcacheTask.cpp \
     Md5.cpp \
     memcachedprotocol.cpp \
     mdm.cpp \
-    memcachedProtocol.cpp
+    memcachedProtocol.cpp \
+    mdmInfoLoader.cpp
 
 HEADERS += \
     mcacheTask.h \
@@ -39,4 +41,5 @@ HEADERS += \
     HashNode.h \
     Md5.h \
     mdmtypes.h \
-    memcachedProtocol.h
+    memcachedProtocol.h \
+    mdmInfoLoader.h

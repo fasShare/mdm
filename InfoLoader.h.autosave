@@ -1,0 +1,20 @@
+#ifndef FAS_INFOLOADER_H
+#define FAS_INFOLOADER_H
+#include <json/json.h>
+#include <string>
+#include <map>
+#include <set>
+
+class InfoLoader
+{
+public:
+  InfoLoader(const std::string& infofile);
+  
+  std::string getValue(const std::initializer_list key_ckey_list) const;
+public:
+  std::string infofile_
+  std::map<std::string, std::set<std::string>> mdmInfo_;
+  std::map<std::string, std::set<std::string>> HashAddrMgrInfo_;
+};
+
+#endif // FAS_INFOLOADER_H

@@ -2,6 +2,7 @@
 #define FAS_MCACHETASK_H
 #include <Buffer.h>
 #include "mdmtypes.h"
+#include <Socket.h>
 #include "memcachedProtocol.h"
 #include <Types.h>
 
@@ -32,6 +33,7 @@ public:
   bool handleIncrDecrCmd(fas::TcpConnShreadPtr conn, fas::Buffer *buffer);
   bool handleOtherCmd(fas::TcpConnShreadPtr conn, fas::Buffer *buffer);
 
+  bool getSocketFromKey(const string& key, fas::Socket& sock);
   std::string getMethod() const;
   std::string getKey() const;
   std::string getFlag() const;

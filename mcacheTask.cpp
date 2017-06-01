@@ -124,58 +124,12 @@ bool mcacheTask::handleOtherCmd(fas::TcpConnShreadPtr conn, fas::Buffer *buffer)
       key_ = headerItems_[1];
     }
 
-    server_ = hash_->getMappingNodeFromKeyString(key_);
-    if (!server_) {
-      conn->sendString("SERVER_ERROR\r\n");
-      setState(TaskState::BAD);
-      return false;
-    }
-
-    //　在没有连接池的情况下
-    fas::NetAddress addr(AF_INET, server_->getPort(), server_->getIp().c_str());
     fas::Socket sock(AF_INET, SOCK_STREAM, 0);
-    sock.setNoBlocking();
-    sock.setExecClose();
-    if (!sock.connect(addr)) {
+
+    if (!getSocketFromKey(key_, sock)) {
       setState(TaskState::BAD);
       conn->sendString("SERVER_ERROR\r\n");
       return false;
-    }
-    LOGGER_TRACE << "ip : " << server_->getIp() << " port : " \
-                 << server_->getPort() << fas::Log::CLRF;
-
-    fas::Events event(sock.getSocket(), fas::kWriteEvent|fas::kReadEvent);
-    fas::Poll poller;
-
-    poller.pollerEventsAdd(&event);
-
-    int timeout = 1000;
-    std::vector<fas::Events> rEvent;
-
-    poller.pollerLoop(rEvent, timeout);
-
-
-
-    if(rEvent.size() <= 0) {
-      setState(TaskState::BAD);
-      conn->sendString("SERVER_ERROR\r\n");
-      return false;
-    }
-
-    LOGGER_TRACE << "after pollloop" << fas::Log::CLRF;
-
-    if (rEvent[0].containsEvents(fas::kReadEvent) &&\
-        rEvent[0].containsEvents(fas::kWriteEvent)) {
-      int error = 0;
-      socklen_t len = 0;
-
-      getsockopt(sock.getSocket(), SOL_SOCKET, SO_ERROR, \
-                 reinterpret_cast<char *>(&error), &len);
-      if (error != 0) {
-        setState(TaskState::BAD);
-        conn->sendString("SERVER_ERROR\r\n");
-        return false;
-      }
     }
 
     LOGGER_TRACE << "connect succeed!" << fas::Log::CLRF;
@@ -238,58 +192,12 @@ bool mcacheTask::handleIncrDecrCmd(fas::TcpConnShreadPtr conn, fas::Buffer *buff
 
     key_ = headerItems_[1];
 
-    server_ = hash_->getMappingNodeFromKeyString(key_);
-    if (!server_) {
-      conn->sendString("SERVER_ERROR\r\n");
-      setState(TaskState::BAD);
-      return false;
-    }
-
-    //　在没有连接池的情况下
-    fas::NetAddress addr(AF_INET, server_->getPort(), server_->getIp().c_str());
     fas::Socket sock(AF_INET, SOCK_STREAM, 0);
-    sock.setNoBlocking();
-    sock.setExecClose();
-    if (!sock.connect(addr)) {
+
+    if (!getSocketFromKey(key_, sock)) {
       setState(TaskState::BAD);
       conn->sendString("SERVER_ERROR\r\n");
       return false;
-    }
-    LOGGER_TRACE << "ip : " << server_->getIp() << " port : " \
-                 << server_->getPort() << fas::Log::CLRF;
-
-    fas::Events event(sock.getSocket(), fas::kWriteEvent|fas::kReadEvent);
-    fas::Poll poller;
-
-    poller.pollerEventsAdd(&event);
-
-    int timeout = 1000;
-    std::vector<fas::Events> rEvent;
-
-    poller.pollerLoop(rEvent, timeout);
-
-
-
-    if(rEvent.size() <= 0) {
-      setState(TaskState::BAD);
-      conn->sendString("SERVER_ERROR\r\n");
-      return false;
-    }
-
-    LOGGER_TRACE << "after pollloop" << fas::Log::CLRF;
-
-    if (rEvent[0].containsEvents(fas::kReadEvent) &&\
-        rEvent[0].containsEvents(fas::kWriteEvent)) {
-      int error = 0;
-      socklen_t len = 0;
-
-      getsockopt(sock.getSocket(), SOL_SOCKET, SO_ERROR, \
-                 reinterpret_cast<char *>(&error), &len);
-      if (error != 0) {
-        setState(TaskState::BAD);
-        conn->sendString("SERVER_ERROR\r\n");
-        return false;
-      }
     }
 
     LOGGER_TRACE << "connect succeed!" << fas::Log::CLRF;
@@ -354,61 +262,13 @@ bool mcacheTask::handleDeleteCmd(fas::TcpConnShreadPtr conn, fas::Buffer *buffer
 
     key_ = headerItems_[1];
 
-    server_ = hash_->getMappingNodeFromKeyString(key_);
-    if (!server_) {
-      conn->sendString("SERVER_ERROR\r\n");
-      setState(TaskState::BAD);
-      return false;
-    }
-
-    //　在没有连接池的情况下
-    fas::NetAddress addr(AF_INET, server_->getPort(), server_->getIp().c_str());
     fas::Socket sock(AF_INET, SOCK_STREAM, 0);
-    sock.setNoBlocking();
-    sock.setExecClose();
-    if (!sock.connect(addr)) {
+
+    if (!getSocketFromKey(key_, sock)) {
       setState(TaskState::BAD);
       conn->sendString("SERVER_ERROR\r\n");
       return false;
     }
-    LOGGER_TRACE << "ip : " << server_->getIp() << " port : " \
-                 << server_->getPort() << fas::Log::CLRF;
-
-    fas::Events event(sock.getSocket(), fas::kWriteEvent|fas::kReadEvent);
-    fas::Poll poller;
-
-    poller.pollerEventsAdd(&event);
-
-    int timeout = 1000;
-    std::vector<fas::Events> rEvent;
-
-    poller.pollerLoop(rEvent, timeout);
-
-
-
-    if(rEvent.size() <= 0) {
-      setState(TaskState::BAD);
-      conn->sendString("SERVER_ERROR\r\n");
-      return false;
-    }
-
-    LOGGER_TRACE << "after pollloop" << fas::Log::CLRF;
-
-    if (rEvent[0].containsEvents(fas::kReadEvent) &&\
-        rEvent[0].containsEvents(fas::kWriteEvent)) {
-      int error = 0;
-      socklen_t len = 0;
-
-      getsockopt(sock.getSocket(), SOL_SOCKET, SO_ERROR, \
-                 reinterpret_cast<char *>(&error), &len);
-      if (error != 0) {
-        setState(TaskState::BAD);
-        conn->sendString("SERVER_ERROR\r\n");
-        return false;
-      }
-    }
-
-    LOGGER_TRACE << "connect succeed!" << fas::Log::CLRF;
 
     head_ = head_ + "\r\n";
     const char *buf = head_.data();
@@ -599,13 +459,6 @@ bool mcacheTask::handleStrogeCmd(fas::TcpConnShreadPtr conn, fas::Buffer *buffer
     LOGGER_TRACE << method_ << " " << key_ << " " << flag_ << " "\
                     << exptime_ << " " << bytes_ << fas::Log::CLRF;
 
-    server_ = hash_->getMappingNodeFromKeyString(key_);
-    if (!server_) {
-      conn->sendString("SERVER_ERROR\r\n");
-      setState(TaskState::BAD);
-      return false;
-    }
-
     setState(TaskState::WAIT_ENOUGH_DATA);
   }
 
@@ -629,51 +482,12 @@ bool mcacheTask::handleStrogeCmd(fas::TcpConnShreadPtr conn, fas::Buffer *buffer
 
 
   if (getState() == TaskState::GET_ALL_DATA) {
-
-    //　在没有连接池的情况下
-    fas::NetAddress addr(AF_INET, server_->getPort(), server_->getIp().c_str());
     fas::Socket sock(AF_INET, SOCK_STREAM, 0);
-    sock.setNoBlocking();
-    sock.setExecClose();
-    if (!sock.connect(addr)) {
+
+    if (!getSocketFromKey(key_, sock)) {
       setState(TaskState::BAD);
       conn->sendString("SERVER_ERROR\r\n");
       return false;
-    }
-    LOGGER_TRACE << "ip : " << server_->getIp() << " port : " \
-                 << server_->getPort() << fas::Log::CLRF;
-    fas::Events event(sock.getSocket(), fas::kWriteEvent|fas::kReadEvent);
-    fas::Poll poller;
-
-    poller.pollerEventsAdd(&event);
-
-    int timeout = 1000;
-    std::vector<fas::Events> rEvent;
-
-    poller.pollerLoop(rEvent, timeout);
-
-
-
-    if(rEvent.size() <= 0) {
-      setState(TaskState::BAD);
-      conn->sendString("SERVER_ERROR\r\n");
-      return false;
-    }
-
-    LOGGER_TRACE << "after pollloop" << fas::Log::CLRF;
-
-    if (rEvent[0].containsEvents(fas::kReadEvent) &&\
-        rEvent[0].containsEvents(fas::kWriteEvent)) {
-      int error = 0;
-      socklen_t len = 0;
-
-      getsockopt(sock.getSocket(), SOL_SOCKET, SO_ERROR, \
-                 reinterpret_cast<char *>(&error), &len);
-      if (error != 0) {
-        setState(TaskState::BAD);
-        conn->sendString("SERVER_ERROR\r\n");
-        return false;
-      }
     }
 
     LOGGER_TRACE << "connect succeed!" << fas::Log::CLRF;
@@ -720,6 +534,59 @@ bool mcacheTask::handleStrogeCmd(fas::TcpConnShreadPtr conn, fas::Buffer *buffer
   }
 
   renew();
+  return true;
+}
+
+bool mcacheTask::getSocketFromKey(const string& key, fas::Socket& sock) {
+  server_ = hash_->getMappingNodeFromKeyString(key_);
+  if (!server_) {
+    return false;
+  }
+  //　在没有连接池的情况下
+  fas::NetAddress addr(AF_INET, server_->getPort(), server_->getIp().c_str());
+
+
+  sock.setNoBlocking();
+  sock.setExecClose();
+  if (!sock.connect(addr)) {
+    return false;
+  }
+  LOGGER_TRACE << "ip : " << server_->getIp() << " port : " \
+               << server_->getPort() << fas::Log::CLRF;
+  fas::Events event(sock.getSocket(), fas::kWriteEvent|fas::kReadEvent);
+  fas::Poll poller;
+
+  poller.pollerEventsAdd(&event);
+
+  int timeout = 1000;
+  std::vector<fas::Events> rEvent;
+
+  poller.pollerLoop(rEvent, timeout);
+
+  if(rEvent.size() <= 0) {
+    return false;
+  }
+
+  LOGGER_TRACE << "after pollloop" << fas::Log::CLRF;
+
+  int error = 0;
+  socklen_t len = sizeof(error);
+
+  if (rEvent[0].containsAtLeastOneEvents(fas::kWriteEvent|fas::kReadEvent)) {
+    if (getsockopt(sock.getSocket(), SOL_SOCKET, SO_ERROR, \
+                reinterpret_cast<char *>(&error), &len) == 0 ){
+      if (error != 0) {
+        return false;
+      }
+    } else {
+      LOGGER_ERROR << " getsockopt : " << ::strerror(errno) << fas::Log::CLRF;
+      return false;
+    }
+  } else {
+    LOGGER_ERROR << " poll connect error : " << ::strerror(errno) << fas::Log::CLRF;
+    return false;
+  }
+
   return true;
 }
 
